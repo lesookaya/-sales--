@@ -12,7 +12,7 @@
       <h1>Расчет премии</h1>
       <label class="sales-plan">
         <span>План продаж</span>
-        <input type="number" min="0" step="1000" placeholder="Введите сумму">
+        <input id="salesPlan" type="number" min="0" step="1000" placeholder="Введите сумму">
       </label>
     </section>
 
@@ -22,7 +22,7 @@
           <h2>Нормы</h2>
         </div>
         <div class="table-wrap">
-          <table>
+          <table id="normsTable">
             <tbody>
               <tr>
                 <td>Количество рабочих дней в месяц</td>
@@ -30,7 +30,7 @@
               </tr>
               <tr>
                 <td>Новых заявок в день</td>
-                <td><input type="number" min="0" step="1"></td>
+                <td><input id="newRequestsPerDay" type="number" min="0" step="1"></td>
               </tr>
               <tr>
                 <td>Обработанные новые заявки в месяц</td>
@@ -42,7 +42,7 @@
               </tr>
               <tr>
                 <td>Средний чек</td>
-                <td><input type="number" min="0" step="1000"></td>
+                <td><input id="averageCheck" type="number" min="0" step="1000"></td>
               </tr>
               <tr>
                 <td>План состоявшихся сделок в месяц</td>
@@ -73,37 +73,37 @@
                 <td><input type="text" value="Лид взят в работу"></td>
                 <td><input class="funnel-value" type="number" min="0" step="1"></td>
                 <td class="conversion">-</td>
-                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">×</button></td>
+                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">x</button></td>
               </tr>
               <tr>
                 <td><input type="text" value="Лид ответил"></td>
                 <td><input class="funnel-value" type="number" min="0" step="1"></td>
                 <td class="conversion">-</td>
-                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">×</button></td>
+                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">x</button></td>
               </tr>
               <tr>
                 <td><input type="text" value="Лид квалифицирован"></td>
                 <td><input class="funnel-value" type="number" min="0" step="1"></td>
                 <td class="conversion">-</td>
-                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">×</button></td>
+                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">x</button></td>
               </tr>
               <tr>
                 <td><input type="text" value="Встреча назначена"></td>
                 <td><input class="funnel-value" type="number" min="0" step="1"></td>
                 <td class="conversion">-</td>
-                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">×</button></td>
+                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">x</button></td>
               </tr>
               <tr>
                 <td><input type="text" value="Встреча состоялась"></td>
                 <td><input class="funnel-value" type="number" min="0" step="1"></td>
                 <td class="conversion">-</td>
-                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">×</button></td>
+                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">x</button></td>
               </tr>
               <tr>
                 <td><input type="text" value="Состоявшихся сделок"></td>
                 <td><input class="funnel-value" type="number" min="0" step="1"></td>
                 <td class="conversion">-</td>
-                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">×</button></td>
+                <td><button class="icon-button remove-row" type="button" aria-label="Удалить строку">x</button></td>
               </tr>
             </tbody>
           </table>
@@ -116,7 +116,7 @@
         <h2>% премии от выполнения плана</h2>
       </div>
       <div class="table-wrap">
-        <table>
+        <table id="bonusTable">
           <thead>
             <tr>
               <th>От</th>
@@ -144,6 +144,153 @@
               <td><input type="text" value="100%"></td>
               <td><input type="text" value="и выше"></td>
               <td><input type="text" value="4%"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="table-block calculation-block">
+      <div class="table-title-row">
+        <h2>Расчет премии</h2>
+        <button class="secondary-button" type="button" id="addCalculationRow">+ строка</button>
+      </div>
+      <div class="table-wrap wide-table-wrap">
+        <table id="calculationTable">
+          <thead>
+            <tr>
+              <th>Лид взят в работу</th>
+              <th>Лид ответил</th>
+              <th>Лид квалифицирован</th>
+              <th>Встреча назначена</th>
+              <th>Встреча состоялась</th>
+              <th>Состоявшихся сделок</th>
+              <th>Сумма продаж</th>
+              <th>% от плана выручки</th>
+              <th>% менеджера</th>
+              <th>Сумма премии менеджера</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
+            </tr>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
+            </tr>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
+            </tr>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
+            </tr>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
+            </tr>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
+            </tr>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
+            </tr>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
+            </tr>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
+            </tr>
+            <tr>
+              <td data-field="leads"></td>
+              <td data-field="answered"></td>
+              <td data-field="qualified"></td>
+              <td data-field="meetingSet"></td>
+              <td data-field="meetingDone"></td>
+              <td data-field="deals"></td>
+              <td data-field="sales"></td>
+              <td data-field="planPercent"></td>
+              <td data-field="managerPercent"></td>
+              <td data-field="premium"></td>
             </tr>
           </tbody>
         </table>

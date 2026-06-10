@@ -105,6 +105,10 @@ td input:focus {
   overflow-x: auto;
 }
 
+.wide-table-wrap {
+  max-height: 640px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -133,10 +137,14 @@ tr:last-child td {
   border-bottom: 0;
 }
 
-.conversion {
-  min-width: 155px;
+.conversion,
+#calculationTable td {
   color: var(--accent-dark);
   font-weight: 700;
+}
+
+.conversion {
+  min-width: 155px;
 }
 
 .action-column {
@@ -168,7 +176,7 @@ tr:last-child td {
   height: 34px;
   color: var(--danger);
   background: #fff1f0;
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1;
 }
 
@@ -176,12 +184,28 @@ tr:last-child td {
   background: #ffe0dc;
 }
 
-.bonus-block {
+.bonus-block,
+.calculation-block {
   margin-top: 24px;
 }
 
 .bonus-block table {
   table-layout: fixed;
+}
+
+#calculationTable {
+  min-width: 1260px;
+  table-layout: fixed;
+}
+
+#calculationTable th,
+#calculationTable td {
+  min-width: 120px;
+}
+
+#calculationTable th:nth-child(10),
+#calculationTable td:nth-child(10) {
+  min-width: 165px;
 }
 
 @media (max-width: 900px) {
