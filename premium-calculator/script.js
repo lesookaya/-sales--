@@ -7,8 +7,11 @@ const averageCheckInput = document.querySelector("#averageCheck");
 const funnelTable = document.querySelector("#funnelTable");
 const bonusTable = document.querySelector("#bonusTable");
 const calculationTable = document.querySelector("#calculationTable");
+const conversionStandardsTable = document.querySelector("#conversionStandardsTable");
 const addFunnelRowButton = document.querySelector("#addFunnelRow");
+const addBonusRowButton = document.querySelector("#addBonusRow");
 const addCalculationRowButton = document.querySelector("#addCalculationRow");
+const addConversionStandardRowButton = document.querySelector("#addConversionStandardRow");
 const saveDataButton = document.querySelector("#saveData");
 const saveStatus = document.querySelector("#saveStatus");
 const STORAGE_KEY = "premiumCalculatorData";
@@ -32,12 +35,24 @@ function formatNumber(value) {
   return Math.round(value).toLocaleString("ru-RU");
 }
 
-function formatPercent(value) {
+function formatDecimal(value, digits = 1) {
   if (!Number.isFinite(value)) {
     return "-";
   }
 
-  return `${Math.round(value)}%`;
+  const rounded = Number(value.toFixed(digits));
+
+  return rounded.toLocaleString("ru-RU", {
+    maximumFractionDigits: digits,
+  });
+}
+
+function formatPercent(value, digits = 0) {
+  if (!Number.isFinite(value)) {
+    return "-";
+  }
+
+  return `${formatDecimal(value, digits)}%`;
 }
 
 function formatInputMoney(value) {
@@ -159,6 +174,81 @@ function createFunnelRow(stage = "Новая стадия", value = "") {
   return row;
 }
 
+function getBonusClass(index) {
+  if (index === 0) {
+    return "bonus-low";
+  }
+
+  if (index === 1) {
+    return "bonus-middle";
+  }
+
+  if (index === 2) {
+    return "bonus-good";
+  }
+
+  return "bonus-best";
+}
+
+function applyBonusRowClasses() {
+  Array.from(bonusTable.querySelectorAll("tbody tr")).forEach((row, index) => {
+    row.className = getBonusClass(index);
+  });
+}
+
+function createBonusRow(from = "", to = "", percent = "") {
+  const row = document.createElement("tr");
+
+  row.innerHTML = `
+    <td><input type="text"></td>
+    <td><input type="text"></td>
+    <td><input type="text"></td>
+  `;
+
+  const inputs = row.querySelectorAll("input");
+  inputs[0].value = from;
+  inputs[1].value = to;
+  inputs[2].value = percent;
+
+  return row;
+}
+
+function getStandardLabel(status) {
+  const labels = {
+    below: "Ниже нормы",
+    normal: "Норма",
+    good: "Хорошо",
+    excellent: "Отлично",
+  };
+
+  return labels[status] || labels.normal;
+}
+
+function createConversionStandardRow(from = "", to = "", status = "normal") {
+  const row = document.createElement("tr");
+  const statuses = ["below", "normal", "good", "excellent"];
+
+  row.dataset.status = status;
+  row.innerHTML = `
+    <td><input type="text" placeholder="Стадия"></td>
+    <td><input type="text" placeholder="Стадия"></td>
+    <td>
+      <select class="standard-status">
+        ${statuses.map((item) => `<option value="${item}">${getStandardLabel(item)}</option>`).join("")}
+      </select>
+    </td>
+    <td><button class="icon-button remove-standard-row" type="button" aria-label="Удалить строку">x</button></td>
+  `;
+
+  const inputs = row.querySelectorAll("input");
+  const select = row.querySelector("select");
+  inputs[0].value = from;
+  inputs[1].value = to;
+  select.value = status;
+
+  return row;
+}
+
 function updateCalculationTable() {
   const rows = Array.from(calculationTable.querySelectorAll("tbody tr"));
   const newRequestsPerDay = Number(newRequestsPerDayInput.value) || 0;
@@ -172,26 +262,26 @@ function updateCalculationTable() {
   const dealsConversion = getFunnelConversion(5);
 
   rows.forEach((row, index) => {
-    const leads = Math.round(newRequestsPerDay * (index + 1));
-    const answered = Math.round(leads * answeredConversion);
-    const qualified = Math.round(answered * qualifiedConversion);
-    const meetingSet = Math.round(qualified * meetingSetConversion);
-    const meetingDone = Math.round(meetingSet * meetingDoneConversion);
-    const deals = Math.round(meetingDone * dealsConversion);
+    const leads = newRequestsPerDay * (index + 1);
+    const answered = leads * answeredConversion;
+    const qualified = answered * qualifiedConversion;
+    const meetingSet = qualified * meetingSetConversion;
+    const meetingDone = meetingSet * meetingDoneConversion;
+    const deals = Math.floor(meetingDone * dealsConversion);
     const sales = deals * averageCheck;
     const planPercent = salesPlan > 0 ? (sales / salesPlan) * 100 : 0;
     const managerPercent = getManagerPercent(planPercent);
     const premium = sales * (managerPercent / 100);
 
-    row.querySelector('[data-field="leads"]').textContent = formatNumber(leads);
-    row.querySelector('[data-field="answered"]').textContent = formatNumber(answered);
-    row.querySelector('[data-field="qualified"]').textContent = formatNumber(qualified);
-    row.querySelector('[data-field="meetingSet"]').textContent = formatNumber(meetingSet);
-    row.querySelector('[data-field="meetingDone"]').textContent = formatNumber(meetingDone);
+    row.querySelector('[data-field="leads"]').textContent = formatDecimal(leads);
+    row.querySelector('[data-field="answered"]').textContent = formatDecimal(answered);
+    row.querySelector('[data-field="qualified"]').textContent = formatDecimal(qualified);
+    row.querySelector('[data-field="meetingSet"]').textContent = formatDecimal(meetingSet);
+    row.querySelector('[data-field="meetingDone"]').textContent = formatDecimal(meetingDone);
     row.querySelector('[data-field="deals"]').textContent = formatNumber(deals);
     row.querySelector('[data-field="sales"]').textContent = formatNumber(sales);
     row.querySelector('[data-field="planPercent"]').textContent = formatPercent(planPercent);
-    row.querySelector('[data-field="managerPercent"]').textContent = formatPercent(managerPercent);
+    row.querySelector('[data-field="managerPercent"]').textContent = formatPercent(managerPercent, 2);
     row.querySelector('[data-field="premium"]').textContent = formatNumber(premium);
   });
 }
@@ -199,6 +289,7 @@ function updateCalculationTable() {
 function updateAllCalculations() {
   updateFunnelConversions();
   updateNorms();
+  applyBonusRowClasses();
   updateCalculationTable();
 }
 
@@ -225,15 +316,63 @@ function addCalculationRow() {
   updateCalculationTable();
 }
 
+function addBonusRow() {
+  bonusTable.querySelector("tbody").append(createBonusRow("100%", "и выше", "4%"));
+  updateAllCalculations();
+}
+
+function addConversionStandardRow() {
+  conversionStandardsTable.querySelector("tbody").append(createConversionStandardRow("", "", "excellent"));
+}
+
+function removeConversionStandardRow(button) {
+  const rows = conversionStandardsTable.querySelectorAll("tbody tr");
+
+  if (rows.length <= 1) {
+    return;
+  }
+
+  button.closest("tr").remove();
+}
+
+function updateConversionStandardStatus(select) {
+  select.closest("tr").dataset.status = select.value;
+}
+
 function saveData() {
   const data = {
-    inputs: Array.from(document.querySelectorAll("input")).map((input) => input.value),
+    simpleInputs: {
+      salesPlan: salesPlanInput.value,
+      workDays: workDaysInput.value,
+      newRequestsPerDay: newRequestsPerDayInput.value,
+      averageCheck: averageCheckInput.value,
+      plannedDeals: document.querySelector("#plannedDeals")?.value || "",
+    },
     funnelRows: Array.from(funnelTable.querySelectorAll("tbody tr")).map((row) => {
       const inputs = row.querySelectorAll("input");
 
       return {
         stage: inputs[0]?.value || "",
         value: inputs[1]?.value || "",
+      };
+    }),
+    bonusRows: Array.from(bonusTable.querySelectorAll("tbody tr")).map((row) => {
+      const inputs = row.querySelectorAll("input");
+
+      return {
+        from: inputs[0]?.value || "",
+        to: inputs[1]?.value || "",
+        percent: inputs[2]?.value || "",
+      };
+    }),
+    conversionStandardRows: Array.from(conversionStandardsTable.querySelectorAll("tbody tr")).map((row) => {
+      const inputs = row.querySelectorAll("input");
+      const select = row.querySelector("select");
+
+      return {
+        from: inputs[0]?.value || "",
+        to: inputs[1]?.value || "",
+        status: select?.value || "normal",
       };
     }),
     calculationRowCount: calculationTable.querySelectorAll("tbody tr").length,
@@ -263,13 +402,39 @@ function restoreData() {
   }
 
   const funnelBody = funnelTable.querySelector("tbody");
+  const bonusBody = bonusTable.querySelector("tbody");
   const calculationBody = calculationTable.querySelector("tbody");
+  const standardsBody = conversionStandardsTable.querySelector("tbody");
+
+  if (data.simpleInputs) {
+    Object.entries(data.simpleInputs).forEach(([id, value]) => {
+      const input = document.querySelector(`#${id}`);
+
+      if (input) {
+        input.value = value;
+      }
+    });
+  } else if (Array.isArray(data.inputs)) {
+    document.querySelectorAll("input").forEach((input, index) => {
+      if (!input.readOnly && data.inputs[index] !== undefined) {
+        input.value = data.inputs[index];
+      }
+    });
+  }
 
   if (Array.isArray(data.funnelRows) && data.funnelRows.length) {
     funnelBody.innerHTML = "";
 
     data.funnelRows.forEach((item) => {
       funnelBody.append(createFunnelRow(item.stage, item.value));
+    });
+  }
+
+  if (Array.isArray(data.bonusRows) && data.bonusRows.length) {
+    bonusBody.innerHTML = "";
+
+    data.bonusRows.forEach((item) => {
+      bonusBody.append(createBonusRow(item.from, item.to, item.percent));
     });
   }
 
@@ -281,11 +446,11 @@ function restoreData() {
     }
   }
 
-  if (Array.isArray(data.inputs)) {
-    document.querySelectorAll("input").forEach((input, index) => {
-      if (!input.readOnly && data.inputs[index] !== undefined) {
-        input.value = data.inputs[index];
-      }
+  if (Array.isArray(data.conversionStandardRows) && data.conversionStandardRows.length) {
+    standardsBody.innerHTML = "";
+
+    data.conversionStandardRows.forEach((item) => {
+      standardsBody.append(createConversionStandardRow(item.from, item.to, item.status));
     });
   }
 }
@@ -304,12 +469,24 @@ funnelTable.addEventListener("click", (event) => {
   }
 });
 
+conversionStandardsTable.addEventListener("click", (event) => {
+  if (event.target.classList.contains("remove-standard-row")) {
+    removeConversionStandardRow(event.target);
+  }
+});
+
+conversionStandardsTable.addEventListener("change", (event) => {
+  if (event.target.classList.contains("standard-status")) {
+    updateConversionStandardStatus(event.target);
+  }
+});
+
 addFunnelRowButton.addEventListener("click", addFunnelRow);
+addBonusRowButton.addEventListener("click", addBonusRow);
 addCalculationRowButton.addEventListener("click", addCalculationRow);
+addConversionStandardRowButton.addEventListener("click", addConversionStandardRow);
 saveDataButton.addEventListener("click", saveData);
 restoreData();
 formatMoneyInputs();
-updateAllCalculations();
-addFunnelRowButton.addEventListener("click", addFunnelRow);
-addCalculationRowButton.addEventListener("click", addCalculationRow);
+applyBonusRowClasses();
 updateAllCalculations();
