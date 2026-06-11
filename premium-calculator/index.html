@@ -9,7 +9,7 @@
 <body>
   <main class="page">
     <section class="page-header">
-      <h1>Расчет премии</h1>
+      <h1>📝 Расчет премии</h1>
       <label class="sales-plan">
         <span>План продаж</span>
         <input id="salesPlan" class="money-input" type="text" inputmode="numeric" placeholder="Введите сумму">
@@ -46,7 +46,7 @@
               </tr>
               <tr>
                 <td>План состоявшихся сделок в месяц</td>
-                <td><input type="number" min="0" step="1"></td>
+                <td><input id="plannedDeals" type="number" min="0" step="1"></td>
               </tr>
             </tbody>
           </table>
@@ -114,6 +114,7 @@
     <section class="table-block bonus-block">
       <div class="table-title-row">
         <h2>% премии от выполнения плана</h2>
+        <button class="secondary-button" type="button" id="addBonusRow">+ строка</button>
       </div>
       <div class="table-wrap">
         <table id="bonusTable">
@@ -125,22 +126,22 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr class="bonus-low">
               <td><input type="text" value="0%"></td>
               <td><input type="text" value="19%"></td>
               <td><input type="text" value="1%"></td>
             </tr>
-            <tr>
+            <tr class="bonus-middle">
               <td><input type="text" value="20%"></td>
               <td><input type="text" value="49%"></td>
               <td><input type="text" value="2%"></td>
             </tr>
-            <tr>
+            <tr class="bonus-good">
               <td><input type="text" value="50%"></td>
               <td><input type="text" value="99%"></td>
               <td><input type="text" value="3%"></td>
             </tr>
-            <tr>
+            <tr class="bonus-best">
               <td><input type="text" value="100%"></td>
               <td><input type="text" value="и выше"></td>
               <td><input type="text" value="4%"></td>
@@ -291,6 +292,79 @@
               <td data-field="planPercent"></td>
               <td data-field="managerPercent"></td>
               <td data-field="premium"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="table-block conversion-standards-block">
+      <div class="table-title-row">
+        <h2>Нормативы конверсий</h2>
+        <button class="secondary-button" type="button" id="addConversionStandardRow">+ строка</button>
+      </div>
+      <div class="table-wrap">
+        <table id="conversionStandardsTable">
+          <thead>
+            <tr>
+              <th>Из стадии</th>
+              <th>В стадию</th>
+              <th>Оценка</th>
+              <th class="action-column"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-status="below">
+              <td><input type="text" placeholder="Стадия"></td>
+              <td><input type="text" placeholder="Стадия"></td>
+              <td>
+                <select class="standard-status">
+                  <option value="below" selected>Ниже нормы</option>
+                  <option value="normal">Норма</option>
+                  <option value="good">Хорошо</option>
+                  <option value="excellent">Отлично</option>
+                </select>
+              </td>
+              <td><button class="icon-button remove-standard-row" type="button" aria-label="Удалить строку">x</button></td>
+            </tr>
+            <tr data-status="normal">
+              <td><input type="text" placeholder="Стадия"></td>
+              <td><input type="text" placeholder="Стадия"></td>
+              <td>
+                <select class="standard-status">
+                  <option value="below">Ниже нормы</option>
+                  <option value="normal" selected>Норма</option>
+                  <option value="good">Хорошо</option>
+                  <option value="excellent">Отлично</option>
+                </select>
+              </td>
+              <td><button class="icon-button remove-standard-row" type="button" aria-label="Удалить строку">x</button></td>
+            </tr>
+            <tr data-status="good">
+              <td><input type="text" placeholder="Стадия"></td>
+              <td><input type="text" placeholder="Стадия"></td>
+              <td>
+                <select class="standard-status">
+                  <option value="below">Ниже нормы</option>
+                  <option value="normal">Норма</option>
+                  <option value="good" selected>Хорошо</option>
+                  <option value="excellent">Отлично</option>
+                </select>
+              </td>
+              <td><button class="icon-button remove-standard-row" type="button" aria-label="Удалить строку">x</button></td>
+            </tr>
+            <tr data-status="excellent">
+              <td><input type="text" placeholder="Стадия"></td>
+              <td><input type="text" placeholder="Стадия"></td>
+              <td>
+                <select class="standard-status">
+                  <option value="below">Ниже нормы</option>
+                  <option value="normal">Норма</option>
+                  <option value="good">Хорошо</option>
+                  <option value="excellent" selected>Отлично</option>
+                </select>
+              </td>
+              <td><button class="icon-button remove-standard-row" type="button" aria-label="Удалить строку">x</button></td>
             </tr>
           </tbody>
         </table>
