@@ -67,7 +67,8 @@ h2 {
 }
 
 .sales-plan input,
-td input {
+td input,
+td select {
   width: 100%;
   min-height: 42px;
   border: 1px solid var(--line);
@@ -85,7 +86,8 @@ td input {
 }
 
 .sales-plan input:focus,
-td input:focus {
+td input:focus,
+td select:focus {
   outline: 2px solid rgba(15, 118, 110, 0.2);
   border-color: var(--accent);
 }
@@ -201,8 +203,45 @@ tr:last-child td {
 }
 
 .bonus-block,
-.calculation-block {
+.calculation-block,
+.conversion-standards-block {
   margin-top: 24px;
+}
+
+.bonus-low td {
+  background: #feecec;
+}
+
+.bonus-middle td {
+  background: #fff1df;
+}
+
+.bonus-good td {
+  background: #eef7ff;
+}
+
+.bonus-best td {
+  background: #ecfdf3;
+}
+
+#conversionStandardsTable tr[data-status="below"] td {
+  background: #feecec;
+}
+
+#conversionStandardsTable tr[data-status="normal"] td {
+  background: #fff8e8;
+}
+
+#conversionStandardsTable tr[data-status="good"] td {
+  background: #eef7ff;
+}
+
+#conversionStandardsTable tr[data-status="excellent"] td {
+  background: #ecfdf3;
+}
+
+#conversionStandardsTable select {
+  appearance: auto;
 }
 
 .save-section {
@@ -241,7 +280,7 @@ tr:last-child td {
 }
 
 #calculationTable {
-  min-width: 1260px;
+  min-width: 1320px;
   table-layout: fixed;
 }
 
@@ -259,6 +298,11 @@ tr:last-child td {
 #calculationTable th:nth-child(10),
 #calculationTable td:nth-child(10) {
   min-width: 165px;
+}
+
+#calculationTable th:nth-child(3),
+#calculationTable td:nth-child(3) {
+  min-width: 145px;
 }
 
 @media (max-width: 900px) {
