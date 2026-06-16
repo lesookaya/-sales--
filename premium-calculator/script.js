@@ -4,14 +4,31 @@ const newRequestsPerDayInput = document.querySelector("#newRequestsPerDay");
 const processedRequestsInput = document.querySelector("#processedRequests");
 const monthlyMeetingsInput = document.querySelector("#monthlyMeetings");
 const averageCheckInput = document.querySelector("#averageCheck");
+const salaryInput = document.querySelector("#salaryInput");
+const kpiInput = document.querySelector("#kpiInput");
+const normalPremiumInput = document.querySelector("#normalPremiumInput");
+const strongPremiumInput = document.querySelector("#strongPremiumInput");
+const topPremiumInput = document.querySelector("#topPremiumInput");
+const normalIncome = document.querySelector("#normalIncome");
+const strongIncome = document.querySelector("#strongIncome");
+const topIncome = document.querySelector("#topIncome");
+const kpiCard = document.querySelector("#kpiCard");
+const hideKpiButton = document.querySelector("#hideKpi");
+const showKpiButton = document.querySelector("#showKpi");
+const incomeContent = document.querySelector(".income-content");
 const funnelTable = document.querySelector("#funnelTable");
 const bonusTable = document.querySelector("#bonusTable");
 const calculationTable = document.querySelector("#calculationTable");
 const conversionStandardsTable = document.querySelector("#conversionStandardsTable");
+const calculationTableWrap = calculationTable.closest(".table-wrap");
+const conversionStandardsWrap = conversionStandardsTable.closest(".table-wrap");
 const addFunnelRowButton = document.querySelector("#addFunnelRow");
 const addBonusRowButton = document.querySelector("#addBonusRow");
 const addCalculationRowButton = document.querySelector("#addCalculationRow");
 const addConversionStandardRowButton = document.querySelector("#addConversionStandardRow");
+const toggleIncomeScenariosButton = document.querySelector("#toggleIncomeScenarios");
+const toggleCalculationTableButton = document.querySelector("#toggleCalculationTable");
+const toggleConversionStandardsButton = document.querySelector("#toggleConversionStandards");
 const saveDataButton = document.querySelector("#saveData");
 const saveStatus = document.querySelector("#saveStatus");
 const STORAGE_KEY = "premiumCalculatorData";
@@ -33,6 +50,10 @@ function formatNumber(value) {
   }
 
   return Math.round(value).toLocaleString("ru-RU");
+}
+
+function formatCurrency(value) {
+  return `${formatNumber(value)} ₽`;
 }
 
 function formatDecimal(value, digits = 1) {
@@ -138,6 +159,19 @@ function updateNorms() {
   monthlyMeetingsInput.value = formatNumber(monthlyMeetings);
 }
 
+function getKpiValue() {
+  return kpiCard.hidden ? 0 : toNumber(kpiInput.value);
+}
+
+function updateIncomeScenarios() {
+  const salary = toNumber(salaryInput.value);
+  const kpi = getKpiValue();
+
+  normalIncome.textContent = formatCurrency(salary + kpi + toNumber(normalPremiumInput.value));
+  strongIncome.textContent = formatCurrency(salary + kpi + toNumber(strongPremiumInput.value));
+  topIncome.textContent = formatCurrency(salary + kpi + toNumber(topPremiumInput.value));
+}
+
 function createCalculationRow() {
   const row = document.createElement("tr");
 
@@ -224,7 +258,7 @@ function getStandardLabel(status) {
   return labels[status] || labels.normal;
 }
 
-function createConversionStandardRow(from = "", to = "", status = "normal") {
+function createConversionStandardRow(from = "", to = "", percent = "", status = "normal") {
   const row = document.createElement("tr");
   const statuses = ["below", "normal", "good", "excellent"];
 
@@ -232,18 +266,22 @@ function createConversionStandardRow(from = "", to = "", status = "normal") {
   row.innerHTML = `
     <td><input type="text" placeholder="Стадия"></td>
     <td><input type="text" placeholder="Стадия"></td>
+    <td class="percent-cell"><input class="standard-percent" type="number" min="0" max="100" step="0.1"></td>
     <td>
-      <select class="standard-status">
-        ${statuses.map((item) => `<option value="${item}">${getStandardLabel(item)}</option>`).join("")}
-      </select>
+      <div class="status-actions">
+        <select class="standard-status">
+          ${statuses.map((item) => `<option value="${item}">${getStandardLabel(item)}</option>`).join("")}
+        </select>
+        <button class="icon-button remove-standard-row" type="button" aria-label="Удалить строку">x</button>
+      </div>
     </td>
-    <td><button class="icon-button remove-standard-row" type="button" aria-label="Удалить строку">x</button></td>
   `;
 
   const inputs = row.querySelectorAll("input");
   const select = row.querySelector("select");
   inputs[0].value = from;
   inputs[1].value = to;
+  inputs[2].value = percent;
   select.value = status;
 
   return row;
@@ -289,6 +327,7 @@ function updateCalculationTable() {
 function updateAllCalculations() {
   updateFunnelConversions();
   updateNorms();
+  updateIncomeScenarios();
   applyBonusRowClasses();
   updateCalculationTable();
 }
@@ -322,7 +361,7 @@ function addBonusRow() {
 }
 
 function addConversionStandardRow() {
-  conversionStandardsTable.querySelector("tbody").append(createConversionStandardRow("", "", "excellent"));
+  conversionStandardsTable.querySelector("tbody").append(createConversionStandardRow("", "", "", "excellent"));
 }
 
 function removeConversionStandardRow(button) {
@@ -339,6 +378,31 @@ function updateConversionStandardStatus(select) {
   select.closest("tr").dataset.status = select.value;
 }
 
+function toggleKpi(show) {
+  kpiCard.hidden = !show;
+  showKpiButton.hidden = show;
+  updateIncomeScenarios();
+}
+
+function toggleTableVisibility(target, button, show) {
+  target.classList.toggle("is-hidden", !show);
+  button.textContent = show ? "Скрыть" : "Показать";
+}
+
+function switchTableVisibility(target, button) {
+  toggleTableVisibility(target, button, target.classList.contains("is-hidden"));
+}
+
+function clampStandardPercent(input) {
+  const value = toNumber(input.value);
+
+  if (input.value === "") {
+    return;
+  }
+
+  input.value = Math.min(100, Math.max(0, value));
+}
+
 function saveData() {
   const data = {
     simpleInputs: {
@@ -347,7 +411,16 @@ function saveData() {
       newRequestsPerDay: newRequestsPerDayInput.value,
       averageCheck: averageCheckInput.value,
       plannedDeals: document.querySelector("#plannedDeals")?.value || "",
+      salaryInput: salaryInput.value,
+      kpiInput: kpiInput.value,
+      normalPremiumInput: normalPremiumInput.value,
+      strongPremiumInput: strongPremiumInput.value,
+      topPremiumInput: topPremiumInput.value,
     },
+    kpiHidden: kpiCard.hidden,
+    incomeScenariosHidden: incomeContent.classList.contains("is-hidden"),
+    calculationHidden: calculationTableWrap.classList.contains("is-hidden"),
+    conversionStandardsHidden: conversionStandardsWrap.classList.contains("is-hidden"),
     funnelRows: Array.from(funnelTable.querySelectorAll("tbody tr")).map((row) => {
       const inputs = row.querySelectorAll("input");
 
@@ -372,6 +445,7 @@ function saveData() {
       return {
         from: inputs[0]?.value || "",
         to: inputs[1]?.value || "",
+        percent: inputs[2]?.value || "",
         status: select?.value || "normal",
       };
     }),
@@ -422,6 +496,22 @@ function restoreData() {
     });
   }
 
+  if (typeof data.kpiHidden === "boolean") {
+    toggleKpi(!data.kpiHidden);
+  }
+
+  if (typeof data.incomeScenariosHidden === "boolean") {
+    toggleTableVisibility(incomeContent, toggleIncomeScenariosButton, !data.incomeScenariosHidden);
+  }
+
+  if (typeof data.calculationHidden === "boolean") {
+    toggleTableVisibility(calculationTableWrap, toggleCalculationTableButton, !data.calculationHidden);
+  }
+
+  if (typeof data.conversionStandardsHidden === "boolean") {
+    toggleTableVisibility(conversionStandardsWrap, toggleConversionStandardsButton, !data.conversionStandardsHidden);
+  }
+
   if (Array.isArray(data.funnelRows) && data.funnelRows.length) {
     funnelBody.innerHTML = "";
 
@@ -450,7 +540,12 @@ function restoreData() {
     standardsBody.innerHTML = "";
 
     data.conversionStandardRows.forEach((item) => {
-      standardsBody.append(createConversionStandardRow(item.from, item.to, item.status));
+      standardsBody.append(createConversionStandardRow(
+        item.from,
+        item.to,
+        item.percent || item.currentPercent || item.standardPercent || "",
+        item.status
+      ));
     });
   }
 }
@@ -458,6 +553,10 @@ function restoreData() {
 document.addEventListener("input", (event) => {
   if (event.target.classList.contains("money-input")) {
     event.target.value = formatInputMoney(event.target.value);
+  }
+
+  if (event.target.classList.contains("standard-percent")) {
+    clampStandardPercent(event.target);
   }
 
   updateAllCalculations();
@@ -485,6 +584,17 @@ addFunnelRowButton.addEventListener("click", addFunnelRow);
 addBonusRowButton.addEventListener("click", addBonusRow);
 addCalculationRowButton.addEventListener("click", addCalculationRow);
 addConversionStandardRowButton.addEventListener("click", addConversionStandardRow);
+toggleIncomeScenariosButton.addEventListener("click", () => {
+  switchTableVisibility(incomeContent, toggleIncomeScenariosButton);
+});
+toggleCalculationTableButton.addEventListener("click", () => {
+  switchTableVisibility(calculationTableWrap, toggleCalculationTableButton);
+});
+toggleConversionStandardsButton.addEventListener("click", () => {
+  switchTableVisibility(conversionStandardsWrap, toggleConversionStandardsButton);
+});
+hideKpiButton.addEventListener("click", () => toggleKpi(false));
+showKpiButton.addEventListener("click", () => toggleKpi(true));
 saveDataButton.addEventListener("click", saveData);
 restoreData();
 formatMoneyInputs();
