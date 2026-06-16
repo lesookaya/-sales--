@@ -21,12 +21,13 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
   color: var(--text);
   background: var(--bg);
 }
 
 .page {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1480px, calc(100% - 32px));
   margin: 0 auto;
   padding: 40px 0;
 }
@@ -79,6 +80,10 @@ td select {
   background: #fff;
 }
 
+td select {
+  font-size: 16px;
+}
+
 .calculated-input {
   color: var(--accent-dark);
   background: var(--accent-light);
@@ -118,6 +123,13 @@ td select:focus {
   background: linear-gradient(90deg, #f2fff9, #f3faff);
 }
 
+.title-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
 .table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -135,14 +147,14 @@ table {
 th,
 td {
   border-bottom: 1px solid var(--line);
-  padding: 12px;
+  padding: 13px;
   text-align: left;
   vertical-align: middle;
 }
 
 th {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   background: #f5fffb;
 }
@@ -179,7 +191,7 @@ tr:last-child td {
 
 .secondary-button {
   min-height: 38px;
-  padding: 8px 12px;
+  padding: 8px 14px;
   color: #fff;
   background: var(--accent);
   font-weight: 700;
@@ -203,45 +215,195 @@ tr:last-child td {
 }
 
 .bonus-block,
+.income-scenarios-block,
 .calculation-block,
 .conversion-standards-block {
   margin-top: 24px;
 }
 
+.income-content {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.72fr) minmax(420px, 1.28fr);
+  gap: 22px;
+  padding: 20px;
+  align-items: start;
+}
+
+.income-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.income-card {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.9fr) minmax(160px, 1fr);
+  align-items: center;
+  gap: 14px;
+  min-height: 74px;
+  padding: 14px 16px;
+  border: 2px solid #aee6d2;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #ffffff, #f0fff8);
+  font-weight: 700;
+}
+
+.income-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.income-card input,
+.income-card .money-input {
+  min-width: 0;
+  border: 2px solid #b8dcff;
+  border-radius: 14px;
+  background: #fbfdff;
+  font-weight: 700;
+}
+
+.small-text-button {
+  border: 0;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+}
+
+.small-text-button:hover {
+  color: var(--danger);
+}
+
+.restore-kpi-button {
+  min-height: 56px;
+  color: var(--accent-dark);
+  background: var(--accent-light);
+}
+
+.restore-kpi-button:hover {
+  color: #ffffff;
+}
+
+#incomeScenariosTable td:last-child {
+  color: var(--accent-dark);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+#incomeScenariosTable {
+  overflow: hidden;
+  border: 2px solid #a9ddff;
+  border-radius: 16px;
+  box-shadow: 0 16px 34px rgba(37, 167, 138, 0.12);
+}
+
+#incomeScenariosTable th {
+  color: #174556;
+  background: #dff3ff;
+}
+
+#incomeScenariosTable td {
+  background: #f7fcff;
+}
+
+#incomeScenariosTable tr:nth-child(even) td {
+  background: #effaf5;
+}
+
+#incomeScenariosTable .income-normal-row td {
+  background: #dff1ff;
+}
+
+#incomeScenariosTable .income-strong-row td {
+  background: #efe6ff;
+}
+
+#incomeScenariosTable .income-top-row td {
+  background: #dcf8e8;
+}
+
 .bonus-low td {
-  background: #feecec;
+  background: #ffdada;
 }
 
 .bonus-middle td {
-  background: #fff1df;
+  background: #ffe3c4;
 }
 
 .bonus-good td {
-  background: #eef7ff;
+  background: #dff1ff;
 }
 
 .bonus-best td {
-  background: #ecfdf3;
+  background: #d9f9e7;
+}
+
+.bonus-block {
+  max-width: 760px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.bonus-block th,
+.bonus-block td {
+  padding: 9px 10px;
+}
+
+.bonus-block td input {
+  min-height: 36px;
 }
 
 #conversionStandardsTable tr[data-status="below"] td {
-  background: #feecec;
+  background: #ffdada;
 }
 
 #conversionStandardsTable tr[data-status="normal"] td {
-  background: #fff8e8;
+  background: #fff0c9;
 }
 
 #conversionStandardsTable tr[data-status="good"] td {
-  background: #eef7ff;
+  background: #dff1ff;
 }
 
 #conversionStandardsTable tr[data-status="excellent"] td {
-  background: #ecfdf3;
+  background: #d9f9e7;
 }
 
 #conversionStandardsTable select {
   appearance: auto;
+}
+
+.status-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  gap: 8px;
+  align-items: center;
+}
+
+.percent-cell {
+  position: relative;
+}
+
+.percent-cell input {
+  padding-right: 30px;
+}
+
+.percent-cell::after {
+  content: "%";
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  color: var(--muted);
+  font-weight: 700;
+  transform: translateY(-50%);
+}
+
+.is-hidden {
+  display: none;
 }
 
 .save-section {
@@ -280,14 +442,20 @@ tr:last-child td {
 }
 
 #calculationTable {
-  min-width: 1320px;
+  width: 100%;
+  min-width: 0;
   table-layout: fixed;
 }
 
 #calculationTable th,
 #calculationTable td {
-  min-width: 120px;
+  min-width: 0;
+  padding: 9px 6px;
+  font-size: 13px;
+  line-height: 1.25;
   border-right: 1px solid var(--soft-line);
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 #calculationTable th:last-child,
@@ -297,12 +465,37 @@ tr:last-child td {
 
 #calculationTable th:nth-child(10),
 #calculationTable td:nth-child(10) {
-  min-width: 165px;
+  width: 13%;
 }
 
 #calculationTable th:nth-child(3),
 #calculationTable td:nth-child(3) {
-  min-width: 145px;
+  width: 11%;
+}
+
+#calculationTable th:nth-child(1),
+#calculationTable th:nth-child(2),
+#calculationTable th:nth-child(4),
+#calculationTable th:nth-child(5),
+#calculationTable th:nth-child(6),
+#calculationTable td:nth-child(1),
+#calculationTable td:nth-child(2),
+#calculationTable td:nth-child(4),
+#calculationTable td:nth-child(5),
+#calculationTable td:nth-child(6) {
+  width: 9%;
+}
+
+#calculationTable th:nth-child(7),
+#calculationTable td:nth-child(7) {
+  width: 10%;
+}
+
+#calculationTable th:nth-child(8),
+#calculationTable td:nth-child(8),
+#calculationTable th:nth-child(9),
+#calculationTable td:nth-child(9) {
+  width: 8%;
 }
 
 @media (max-width: 900px) {
@@ -314,6 +507,16 @@ tr:last-child td {
   .page-header {
     display: grid;
     align-items: start;
+  }
+
+  .income-content,
+  .income-cards,
+  .income-card {
+    grid-template-columns: 1fr;
+  }
+
+  #calculationTable {
+    min-width: 1180px;
   }
 }
 
